@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Dimensions,
-    Image,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Dimensions,
+  Image,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import {
-    getMovieCredits,
-    getMovieDetails,
-    getMoviesByCategory,
-    searchMovies
+  getMovieCredits,
+  getMovieDetails,
+  getMoviesByCategory,
+  searchMovies
 } from '../../src/api/movieService';
 
 interface Movie {

@@ -1,12 +1,6 @@
 import theMovieDB from '../api/theMovieDB';
 
-interface Movie {
-  id: number;
-  title: string;
-  poster_path: string;
-  vote_average: number;
-  release_date: string;
-}
+import { Movie } from './movies';
 
 const getPopularMovies = async (): Promise<Movie[]> => {
   try {
@@ -142,3 +136,4 @@ export const getAnimeMovies = async (): Promise<Movie[]> => {
 
 
 export { getMoviesByCategory, getPopularMovies, searchMovies };
+
