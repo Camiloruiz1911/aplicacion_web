@@ -9,3 +9,4 @@ const theMovieDB = axios.create({
 });
 
 export default theMovieDB;
+
