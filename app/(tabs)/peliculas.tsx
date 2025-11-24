@@ -43,7 +43,7 @@ interface CastMember {
   profile_path: string;
 }
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0d0d0d', padding: 10 },
@@ -61,8 +61,8 @@ const styles = StyleSheet.create({
   backButton: { padding: 10, backgroundColor: '#e50914', borderRadius: 8, marginBottom: 10, alignSelf: 'flex-start' },
   backButtonText: { color: '#fff', fontWeight: 'bold' },
   detailPoster: { width: '100%', borderRadius: 10, marginBottom: 10 },
-  detailTitle: { fontSize: 24, fontWeight: 'bold', marginBottom: 5, textAlign: 'center', color: '#fff' },
-  detailInfo: { fontSize: 14, marginBottom: 5, textAlign: 'center', color: '#bbb' },
+  detailTitle: { fontSize: 28, fontWeight: 'bold', marginBottom: 5, textAlign: 'center', color: '#fff' },
+  detailInfo: { fontSize: 16, marginBottom: 5, textAlign: 'center', color: '#bbb' },
   detailOverview: { fontSize: 16, marginBottom: 10, color: '#ddd', textAlign: 'justify' },
   castItem: { marginRight: 10, marginBottom: 10, alignItems: 'center', width: 80 },
   castImage: { width: 80, height: 120, borderRadius: 8, marginBottom: 5 },
@@ -111,12 +111,12 @@ const MoviePopular: React.FC = () => {
     const detail = await getMovieDetails(id);
     const credits = await getMovieCredits(id);
     setMovieDetail(detail);
-    setCast(credits.cast || []);
+    setCast(credits?.cast || []);
   };
 
   const renderMovieItem = (movie: Movie) => (
     <TouchableOpacity key={movie.id} style={styles.item} onPress={() => handleSelectMovie(movie.id)}>
-      <Image source={{ uri: `https://image.tmdb.org/t/p/w500${movie.poster_path}` }} style={styles.image} />
+      <Image source={{ uri: `https://image.tmdb.org/t/p/w780${movie.poster_path}` }} style={styles.image} resizeMode="cover" />
       <Text style={styles.title}>{movie.title}</Text>
       <Text style={styles.details}>
         {movie.release_date ? new Date(movie.release_date).toLocaleDateString('es-ES') : ''}
@@ -127,13 +127,20 @@ const MoviePopular: React.FC = () => {
 
   // 🔹 Detalle de película seleccionado
   if (selectedMovieId && movieDetail) {
+    const isWeb = Platform.OS === 'web';
+    const posterHeight = isWeb ? height * 0.8 : width * 1.5; // 🔹 Ajusta al alto en web, mantiene proporción en móvil
+
     return (
       <ScrollView style={styles.container} contentContainerStyle={styles.scrollWrapper} showsVerticalScrollIndicator nestedScrollEnabled>
         <TouchableOpacity style={styles.backButton} onPress={() => setSelectedMovieId(null)}>
           <Text style={styles.backButtonText}>← Volver</Text>
         </TouchableOpacity>
 
-        <Image source={{ uri: `https://image.tmdb.org/t/p/w500${movieDetail.poster_path}` }} style={[styles.detailPoster, { height: width * 1.2 }]} resizeMode="cover" />
+        <Image
+          source={{ uri: `https://image.tmdb.org/t/p/original${movieDetail.poster_path}` }}
+          style={[styles.detailPoster, { width: width, height: posterHeight }]}
+          resizeMode="contain"
+        />
 
         <Text style={styles.detailTitle}>{movieDetail.title}</Text>
         <Text style={styles.detailInfo}>
@@ -187,3 +194,4 @@ const MoviePopular: React.FC = () => {
 };
 
 export default MoviePopular;
+

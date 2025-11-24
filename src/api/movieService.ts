@@ -1,18 +1,14 @@
-import theMovieDB from "./theMovieDB";
+import { Movie } from './movies';
+import theMovieDB from './theMovieDB';
 
-// 🚀 Películas por categoría (popular, top_rated, upcoming)
-export const getMoviesByCategory = async (category: string, genreId?: number) => {
+export const getMoviesByCategory = async (category: string, genreId?: number): Promise<Movie[]> => {
   try {
     if (genreId) {
       const response = await theMovieDB.get('/discover/movie', {
-        params: {
-          with_genres: genreId,
-          sort_by: 'popularity.desc'
-        }
+        params: { with_genres: genreId, sort_by: 'popularity.desc' },
       });
       return response.data.results;
     }
-
     const response = await theMovieDB.get(`/movie/${category}`);
     return response.data.results;
   } catch (error) {
@@ -21,19 +17,16 @@ export const getMoviesByCategory = async (category: string, genreId?: number) =>
   }
 };
 
-// 🔍 Buscar películas
-export const searchMovies = async (query: string) => {
+export const searchMovies = async (query: string): Promise<Movie[]> => {
   try {
-    const response = await theMovieDB.get('/search/movie', {
-      params: { query },
-    });
+    const response = await theMovieDB.get('/search/movie', { params: { query } });
     return response.data.results;
   } catch {
     return [];
   }
 };
 
-// 📌 Detalles de una película
+// 🔹 Esta es la clave: export nombrado
 export const getMovieDetails = async (id: number) => {
   try {
     const response = await theMovieDB.get(`/movie/${id}`);
@@ -43,7 +36,6 @@ export const getMovieDetails = async (id: number) => {
   }
 };
 
-// 🎭 Créditos / Reparto
 export const getMovieCredits = async (id: number) => {
   try {
     const response = await theMovieDB.get(`/movie/${id}/credits`);
@@ -53,12 +45,3 @@ export const getMovieCredits = async (id: number) => {
   }
 };
 
-// 🎬 Videos (trailers)
-export const getMovieVideos = async (id: number) => {
-  try {
-    const response = await theMovieDB.get(`/movie/${id}/videos`);
-    return response.data;
-  } catch {
-    return { results: [] };
-  }
-};
