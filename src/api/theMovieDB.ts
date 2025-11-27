@@ -1,11 +1,13 @@
 import axios from 'axios';
-import { TMDB_API_KEY, TMDB_BASE_URL } from './constants';
+
+const API_KEY: string = '05ac89357c35ca375cdf8bed94115ab5'; 
+const BASE_URL: string = 'https://api.themoviedb.org/3';
 
 const theMovieDB = axios.create({
-  baseURL: TMDB_BASE_URL,
+  baseURL: BASE_URL,
   params: {
-    api_key: TMDB_API_KEY,
+    api_key: API_KEY,
   },
 });
 
-export default theMovieDB;
+export default theMovieDB;
