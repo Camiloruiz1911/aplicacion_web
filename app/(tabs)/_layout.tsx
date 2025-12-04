@@ -3,9 +3,15 @@ import React from "react";
 
 export default function TabLayout() {
   return (
-    <Tabs>
-      <Tabs.Screen name="peliculas" options={{ title: "Películas" }} />
-      <Tabs.Screen name="explore" options={{ title: "Explore" }} />
+    <Tabs screenOptions={{ headerShown: false, tabBarStyle: { display: "none" } }}>
+      <Tabs.Screen 
+        name="peliculas"
+        options={{ title: "" }}
+      />
+      <Tabs.Screen 
+        name="explore"
+        options={{ title: "" }}
+      />
     </Tabs>
   );
 }

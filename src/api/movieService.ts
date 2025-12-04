@@ -1,5 +1,7 @@
 import theMovieDB from '../api/theMovieDB';
 
+const API_KEY = '05ac89357c35ca375cdf8bed94115ab5';
+
 interface Movie {
   id: number;
   title: string;
@@ -8,9 +10,12 @@ interface Movie {
   release_date: string;
 }
 
-const getPopularMovies = async (): Promise<Movie[]> => {
+/* ---------------------------- POPULARES ---------------------------- */
+export const getPopularMovies = async (): Promise<Movie[]> => {
   try {
-    const response = await theMovieDB.get('/movie/popular');
+    const response = await theMovieDB.get('/movie/popular', {
+      params: { api_key: API_KEY, language: 'es-ES' },
+    });
     return response.data.results;
   } catch (error) {
     console.error('Error al obtener las películas populares:', error);
@@ -18,12 +23,11 @@ const getPopularMovies = async (): Promise<Movie[]> => {
   }
 };
 
-const searchMovies = async (query: string): Promise<Movie[]> => {
+/* ---------------------------- BÚSQUEDA ---------------------------- */
+export const searchMovies = async (query: string): Promise<Movie[]> => {
   try {
     const response = await theMovieDB.get('/search/movie', {
-      params: {
-        query: query,
-      },
+      params: { query, api_key: API_KEY, language: 'es-ES' },
     });
     return response.data.results;
   } catch (error) {
@@ -32,17 +36,30 @@ const searchMovies = async (query: string): Promise<Movie[]> => {
   }
 };
 
-// movieService.ts
-const getMoviesByCategory = async (category: string, genreId?: number): Promise<Movie[]> => {
+/* ---------------------- PELÍCULAS POR CATEGORÍA ---------------------- */
+export const getMoviesByCategory = async (
+  category: string,
+  genreId?: number
+): Promise<Movie[]> => {
   try {
     let url = `/movie/${category}`;
 
     if (genreId) {
-      // Usamos el endpoint de discover para filtrar por género
-      url = `/discover/movie?with_genres=${genreId}&sort_by=popularity.desc`;
+      url = `/discover/movie`;
+      const response = await theMovieDB.get(url, {
+        params: {
+          with_genres: genreId,
+          sort_by: 'popularity.desc',
+          api_key: API_KEY,
+          language: 'es-ES'
+        },
+      });
+      return response.data.results;
     }
 
-    const response = await theMovieDB.get(url);
+    const response = await theMovieDB.get(url, {
+      params: { api_key: API_KEY, language: 'es-ES' },
+    });
     return response.data.results;
   } catch (error) {
     console.error(`Error al obtener películas de la categoría ${category}:`, error);
@@ -50,42 +67,63 @@ const getMoviesByCategory = async (category: string, genreId?: number): Promise<
   }
 };
 
-
-const API_KEY = '05ac89357c35ca375cdf8bed94115ab5'; // reemplaza con tu API key de TMDB
-const BASE_URL = 'https://api.themoviedb.org/3';
-
+/* ---------------------------- DETALLES ---------------------------- */
 export const getMovieDetails = async (id: number) => {
   try {
-    const response = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&language=es-ES`);
-    return await response.json();
+    const response = await theMovieDB.get(`/movie/${id}`, {
+      params: { api_key: API_KEY, language: 'es-ES' },
+    });
+    return response.data;
   } catch (error) {
     console.error('Error al obtener los detalles de la película:', error);
     return null;
   }
 };
 
+/* ---------------------------- CRÉDITOS ---------------------------- */
 export const getMovieCredits = async (id: number) => {
   try {
-    const response = await fetch(`${BASE_URL}/movie/${id}/credits?api_key=${API_KEY}&language=es-ES`);
-    return await response.json();
+    const response = await theMovieDB.get(`/movie/${id}/credits`, {
+      params: { api_key: API_KEY, language: 'es-ES' },
+    });
+    return response.data;
   } catch (error) {
     console.error('Error al obtener el elenco de la película:', error);
     return { cast: [] };
   }
 };
+
+/* ---------------------------- VIDEOS ---------------------------- */
 export const getMovieVideos = async (id: number) => {
   try {
-    const response = await fetch(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=TU_API_KEY&language=es-ES`);
-    return await response.json();
+    const response = await theMovieDB.get(`/movie/${id}/videos`, {
+      params: { api_key: API_KEY, language: 'es-ES' },
+    });
+    return response.data;
   } catch (error) {
     console.error('Error al obtener videos:', error);
     return { results: [] };
   }
 };
+
+/* ---------------------------- IMÁGENES ---------------------------- */
+export const getMovieImages = async (movieId: number): Promise<any> => {
+  try {
+    const response = await theMovieDB.get(`/movie/${movieId}/images`, {
+      params: { include_image_language: 'es,en,null', api_key: API_KEY },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener imágenes:', error);
+    return { backdrops: [] };
+  }
+};
+
+/* ---------------------------- TOP RATED ---------------------------- */
 export const getTopRatedMovies = async (): Promise<Movie[]> => {
   try {
     const response = await theMovieDB.get('/movie/top_rated', {
-      params: { language: 'es-ES' },
+      params: { api_key: API_KEY, language: 'es-ES' },
     });
     return response.data.results;
   } catch (error) {
@@ -93,52 +131,29 @@ export const getTopRatedMovies = async (): Promise<Movie[]> => {
     return [];
   }
 };
-export async function getMovieImages(movieId: number): Promise<any> {
-  const apiKey = 'TU_API_KEY'; // 🔹 reemplaza con tu clave real de TMDB
-  const url = `https://api.themoviedb.org/3/movie/${movieId}/images?api_key=${apiKey}`;
 
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error('Error al obtener las imágenes');
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error en getMovieImages:', error);
-    return { backdrops: [] }; // retornamos vacío si falla
-  }
-}
-
-
+/* ---------------------------- UPCOMING ---------------------------- */
 export const getUpcomingMovies = async (): Promise<Movie[]> => {
   try {
     const response = await theMovieDB.get('/movie/upcoming', {
-      params: { language: 'es-ES' },
+      params: { api_key: API_KEY, language: 'es-ES' },
     });
     return response.data.results;
   } catch (error) {
-    console.error('Error al obtener las películas próximas:', error);
+    console.error('Error al obtener las próximas películas:', error);
     return [];
   }
 };
 
+/* ---------------------------- ANIME ---------------------------- */
 export const getAnimeMovies = async (): Promise<Movie[]> => {
   try {
     const response = await theMovieDB.get('/discover/movie', {
-      params: {
-        with_genres: 16,
-        language: 'es-ES',
-      },
+      params: { with_genres: 16, api_key: API_KEY, language: 'es-ES' },
     });
     return response.data.results;
   } catch (error) {
-    console.error('Error al obtener los animes:', error);
+    console.error('Error al obtener animes:', error);
     return [];
   }
 };
-
-
-
-
-export { getMoviesByCategory, getPopularMovies, searchMovies };
